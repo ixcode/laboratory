@@ -1,0 +1,10 @@
+* Laboratory 
+
+A virtualised laboratory that allows you to experiment with distributed systems right from your laptop.
+
+* Tasks
+
+** TODO Download and run basic Centos Image
+
+** TODO Get ansible provisioning working
+** TODO Provision ui user with interactive login
