@@ -4,7 +4,7 @@ A virtualised laboratory that allows you to experiment with distributed systems 
 
 * Tasks
 
-** TODO Download and run basic Centos Image
+*** TODO Download and run basic Centos Image
 
-** TODO Get ansible provisioning working
-** TODO Provision ui user with interactive login
+*** TODO Get ansible provisioning working
+*** TODO Provision ui user with interactive login
