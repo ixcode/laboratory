@@ -2,6 +2,39 @@
 
 A virtualised laboratory that allows you to experiment with distributed systems right from your laptop.
 
+* Preparation
+
+You need a few things before you can run the lab.
+
+** OSX
+
+- Virtual Box
+- Vagrant
+- Homebrew
+- Ansible `brew install ansible`
+
+- `pip install passlib`
+
+- use the mkpasswd utility
+
+mkpasswd --method=SHA-512
+
+The password for the image is "changeme" make sure you change it!
+
+# yum -y groups install "GNOME Desktop" 
+
+# startx 
+
+I needed to install the virtual box 5 guest additions but then it was fine. Unfortunately virtualbox 5 is not supported by vagrant and so I had to then downgrade virtual box but the guest additions still work!
+
+To turn off cowsay
+export ANSIBLE_NOCOWS=1
+
+export PYTHONUNBUFFERED=1
+
+Dont put spaces in 
+
+
 * Tasks
 
 *** TODO Download and run basic Centos Image

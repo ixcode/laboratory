@@ -1,0 +1,32 @@
+---
+- hosts: all
+  sudo: yes
+  
+  tasks:
+    - name: create an interactive user
+      user: name=interactive groups=wheel password=$6$6BGK3iEj$GyIIqvcS/woIpcg5658w0lls5fHZ4T2ui./Ntn1K3cmWQX3Alb.k6k8RVllxeEnw8FGn/idL2sgDEJch2l.Z//
+
+    - name: configure sudoers
+      lineinfile: dest=/etc/sudoers backup=yes state=present regexp='^%interactive' insertafter="^# %wheel" line='%interactive ALL=(ALL) ALL'
+      tags: config-sudoers
+
+    - name: upgrade all packages
+      yum: name=* state=latest update_cache=yes
+
+      # This should work! yum: name="@GNOME Desktop" state=present but it doesnt seem to
+    - name: install a desktop environment
+      shell: yum -y groups install "GNOME Desktop"
+
+    - name: install docker
+      yum: name='docker,docker-registry' state=latest
+
+    - name: install epel to get ansible
+      yum: name=epel-release state=latest
+      
+    - name: install ansible
+      yum: name=ansible state=latest
+    
+
+       
+  
+      
