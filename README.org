@@ -2,6 +2,13 @@
 
 A virtualised laboratory that allows you to experiment with distributed systems right from your laptop.
 
+We are going to use Docker to actually spin up multiple nodes, but so that we can have a consistent environment, we are first going to work from within a VM.
+
+The reason for this is that Docker needs to be running in a Linux env. We can do this natively in OSX but it requires us to run "boot2docker" a script which basically runs a VM in the background. Whilst convenient it means its difficult to access from, e.g. emacs as you have to be running in the specific command terminal boot2docker starts for you.
+
+With that in mind, we are going to do everything from a scripted VM. The other advantage to this is a completely replicatable base from which to start.
+
+
 * Preparation
 
 You need a few things before you can run the lab.
@@ -37,7 +44,29 @@ Dont put spaces in
 
 * Tasks
 
-*** TODO Download and run basic Centos Image
+*** DONE Download and run basic Centos Image
 
-*** TODO Get ansible provisioning working
-*** TODO Provision ui user with interactive login
+*** DONE Get ansible provisioning working
+*** DONE Provision ui user with interactive login
+
+* Docker and things
+
+** Installing apache on centos 7
+
+From http://www.liquidweb.com/kb/how-to-install-apache-on-centos-7/
+
+```
+sudo yum -y install httpd
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=443/tcp
+sudo firewall-cmd --reload
+
+sudo systemctl start httpd
+sudo systemctl enable httpd # Make sure it starts at boot time
+```
+
+** Using ansible to create a docker image
+
+First pull a base image with ansible already on it, e.g.
+
+

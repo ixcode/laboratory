@@ -26,7 +26,14 @@
     - name: install ansible
       yum: name=ansible state=latest
     
+    - name: install development tools
+      yum: name="@Development Tools"
 
+    - name: install emacs
+      yum: name=emacs
        
   
-      
+    - name: install apache
+      yum: name=httpd
+
+    
