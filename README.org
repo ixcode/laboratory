@@ -69,4 +69,9 @@ sudo systemctl enable httpd # Make sure it starts at boot time
 
 First pull a base image with ansible already on it, e.g.
 
+* Tools
+
+http://www.binarytides.com/linux-commands-monitor-network/
+
+
 
