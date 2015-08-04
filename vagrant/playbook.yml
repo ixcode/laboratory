@@ -20,6 +20,16 @@
     - name: install docker
       yum: name='docker,docker-registry' state=latest
 
+      # This works when you upgrade the kernel. will re-enable it if we want to put some storage
+#    - name: Fix Docker storage (https://github.com/docker/docker/issues/6325) we are adding dm.blocksize
+#      lineinfile: dest=/etc/sysconfig/docker-storage state=present regexp='^DOCKER_STORAGE_OPTIONS' line='DOCKER_STORAGE_OPTIONS=-s devicemapper --storage-opt dm.blocksize=64k --storage-opt dm.fs=xfs --storage-opt dm.thinpooldev=/dev/mapper/centos-docker--pool'
+
+    - name: Make docker start by default
+      shell: systemctl enable docker
+
+    - name: Start docker
+      shell: systemctl start docker
+        
     - name: install epel to get ansible
       yum: name=epel-release state=latest
       
@@ -36,4 +46,12 @@
     - name: install apache
       yum: name=httpd
 
-    
+    - name: Make apache run at startup
+      shell: systemctl enable httpd
+
+    - name: Start apache
+      shell: systemctl start httpd
+
+    - name: Open firewall
+      shell: sudo firewall-cmd --permanent --add-port=80/tcp;sudo firewall-cmd --permanent --add-port=443/tcp;sudo firewall-cmd --reload
+      

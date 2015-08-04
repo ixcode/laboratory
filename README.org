@@ -51,7 +51,25 @@ Dont put spaces in
 
 * Docker and things
 
-** Installing apache on centos 7
+
+** Using ansible to create a docker image
+
+First pull a base image with ansible already on it, e.g.
+
+* Tools
+
+http://www.binarytides.com/linux-commands-monitor-network/
+
+* Vagrant
+
+To see all VMS and clear vagrants cache...
+vagrant global-status --prune 
+
+If the index gets out of sync with the directories eg renaming a dir, you can update metadate here:
+
+/Users/jmdb/.vagrant.d/data/machine-index
+
+* Apache
 
 From http://www.liquidweb.com/kb/how-to-install-apache-on-centos-7/
 
@@ -63,15 +81,105 @@ sudo firewall-cmd --reload
 
 sudo systemctl start httpd
 sudo systemctl enable httpd # Make sure it starts at boot time
+
+
+
 ```
 
-** Using ansible to create a docker image
 
-First pull a base image with ansible already on it, e.g.
+* Docker on Centos 7
 
-* Tools
+It only runs on centos 7
+https://docs.docker.com/installation/centos/
 
-http://www.binarytides.com/linux-commands-monitor-network/
+Once installed, you need to run it : 
+
+sudo systemctl start docker.service
+
+also 
+
+sudo systemctl status docker.service
+
+Want it to run automatically, can do:
+
+sudo systemctl enable docker.service
+
+Docker didn't seem to like starting without the following option:
+--storage-opt="dm.blocksize=64k"
+
+https://github.com/docker/docker/issues/6325
+
+https://docs.docker.com/articles/systemd/
+
+To control the systemd files you can first see if it has an environment file set up, then do this:
+
+sudo systemctl show docker | grep EnvironmentFile
 
 
+If it shows something like this:
 
+EnvironmentFile=/etc/sysconfig/docker (ignore_errors=yes)
+EnvironmentFile=/etc/sysconfig/docker-storage (ignore_errors=yes)
+EnvironmentFile=/etc/sysconfig/docker-network (ignore_errors=yes)
+
+You should be able to add the following into a file at
+
+/etc/sysconfig/docker-storage
+
+We need to replace the file /etc/sysconfig/docker-storage
+
+with the following:
+
+DOCKER_STORAGE_OPTIONS=-s devicemapper --storage-opt dm.fs=xfs --storage-opt dm.thinpooldev=/dev/mapper/centos-docker--pool
+
+
+Need to do this:
+
+echo "DOCKER_STORAGE_OPTIONS=-s devicemapper --storage-opt dm.blocksize=64k --storage-opt dm.fs=xfs --storage-opt dm.thinpooldev=/dev/mapper/centos-docker--pool" >> /etc/sysconfig/docker-storage
+
+Can then do the usual things:
+
+to see the log files 
+
+journalctl -u docker
+
+Then we want to add the following :
+
+systemctl enable docker
+
+Still doesnt work, seems it might be an issue with the kernel. I have version 3.10 latest is 3.18
+
+https://docs.docker.com/installation/centos/
+
+
+http://linoxide.com/linux-how-to/upgrade-linux-kernel-stable-3-18-4-centos/
+
+
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+
+yum --enablerepo=elrepo-kernel install kernel-ml
+
+To see kernel version uname -r
+
+If you get wierd locking errors make sure virtual box gui is not running.
+
+Ok, upgrading the kernel seemed to work. So we don't need all that stuff about setting the block size. However, we probably do want to set storage options as its not reccommended to do this.
+
+Then you should be able to do this:
+
+docker run -it centos:centos7 bash
+
+use vagrant-tramp-term to get an ansi terminal straight in there.
+
+* Getting docker running using ansible
+
+From the ansible book
+
+First you want to get the ansible image:
+
+docker pull ansible/centos7-ansible
+
+
+docker run -d -p 9999:80 ixcode/apache /usr/sbin/apachectl -D FOREGROUND
