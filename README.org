@@ -183,3 +183,137 @@ docker pull ansible/centos7-ansible
 
 
 docker run -d -p 9999:80 ixcode/apache /usr/sbin/apachectl -D FOREGROUND
+
+* Installing openam
+
+In order to be able to use openam for free, you need to build it from source [REF!] 
+
+https://stackoverflow.com/questions/28717833/is-license-in-openam-sourcecode-can-be-used-in-production-enviornment
+
+To do that, you can use the github mirror.
+
+Clone the following repo
+
+git clone git@github.com:OpenRock/OpenAM.git
+
+It will take some time. 
+
+Then go into OpenAm/openam
+
+and type mvn package
+
+You will need maven installed.
+
+http://docs.forgerock.org/en/openam/12.0.0/getting-started/index.html
+
+Enjoy watching the internet download.
+
+In the mean time you can check out the web harness we have built for openam, so you don't need to install and run tomcat to get it working.
+
+## Switching to a particular version of openam:
+
+* Example domain
+
+Selling finance - get list of questions back from equifax which need to answer to verify security.
+
+A bit like this:
+
+http://cqrs.nu/
+
+loan.example.com
+
+** Configuring OpenAM
+
+Run the server, choose "Custome configuration" accept license agreement
+
+Create a password: openamdemonstration
+
+need to choose a cookie domain - loan.example.com
+
+locale en_GB
+
+http://www.pathname.com/fhs/pub/fhs-2.3.html
+
+Put config files in /etc/opt/openam
+
+Set up a domain forwarding in /etc/hosts
+
+127.0.0.1       loan.example.com
+
+Choose the openam datastore for this example. Later can use openDJ or active directory
+
+No to being behind a load balancer
+
+put policy agent password in : openampolicy
+
+OpenAM cannot be in the root context of a web app server.  
+
+http://openam.forgerock.org/openam-documentation/openam-doc-source/doc/install-guide/index.html#chap-uninstall
+
+https://bugster.forgerock.org/jira/browse/OPENAM-3502
+
+
+The built in version of openDJ is not compatible with 
+
+/System/Library/Frameworks/JavaVM.framework/Versions/
+
+JDK version 8 : https://forgerock.org/topic/opendj-2-6-does-not-compatible-with-java-8/
+
+So the simplest thing is to run the openam server on a lower version of jdk for now.
+
+This means downgrading jetty to 
+
+'org.eclipse.jetty:jetty-server:9.1.5.v20140505'
+
+
+from 
+
+'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
+
+incidentally useful files like the install log ge tput in /etc/opt/openam
+
+
+https://bugster.forgerock.org/jira/browse/OPENAM-2798
+
+You need to make sure /etc/hosts has whatever the output of `hostname` command is on your system in it as a mapping
+
+
+login as amadmin:openamdemonstration
+
+
+You need to have JSP compilation enabled
+
+ /openam/console/base/AMAdminFrame.jsp
+
+Also problem with servlets in https://bugster.forgerock.org/jira/browse/OPENAM-2853
+
+No forced path for oauth jsp
+
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=415192
+
+Doesn;t look like jetty 9 is fixed yet:
+
+http://sources.forgerock.org/cru/CR-2421#c15112
+
+So need to use jetty 8
+
+Then it all works
+
+*** setting up protection
+
+Once OpenAM is up and running, we need to set it up it uses the embedded openDJ product which we want to add users to:
+
+http://www.ldapsoft.com/download.html
+
+
+https://forgerock.org/topic/can-i-connect-to-embedded-openam-opendj-ldap-data-store/
+
+You can configure it by going into /etc/opt/openam/opends/bin and running control-panel
+
+Connect to a remote server and use the domain name you set up in hosts file. Password is your admin password.
+
+We can then add two users, 
+
+adminuser:adminuser
+worker:worker
+
